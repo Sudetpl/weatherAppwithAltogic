@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="app">
+        <div class="header">
+            <input type="text" id="cityname" placeholder="Enter city...">
+
+            <input type="text" id="mail" placeholder="Enter mail...">
+        </div>
+        <div>
+            <button class="button" onclick="SendMail()">Click For Mail</button>
+            <script>
+
+                function SendMail(){
+                var mail = document.getElementById("mail").value
+                var cityname = document.getElementById("cityname").value;
+                console.log(mail+cityname)
+                var config = {
+                    method: 'post',
+                    url: 'https://weatherapp.c1-na.altogic.com/DailyWeatherSend?cityName='+cityname+'&mail='+mail,
+                    headers: { }
+                };
+
+                axios(config)
+                .then(function (response) {
+                    console.log(JSON.stringify(response.data));
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+
+            }
+
+            </script>
+        </div>
+        <div class="content">
+            <div class="city" id="citylabel">Erzurum, TR</div>
+            <div class="temp" id="templabel">2°C</div>
+            <div class="desc" id="desclabel">Parçalı Bulutlu</div>
+            <div class="date" id="datelabel">1 Nisan Cuma 2022</div>
+            <div class="minmax" id="aralabel">1°C / 8°C</div>
+        </div>
+        <div class="header">
+        <input type="text" id="choosedcity" placeholder="Enter city...">
+    </div>
+
+        <button class="button" onclick="Refresh()">Change City</button>
+        <script>
+            function Refresh(){
+  var choosedcity=document.getElementById("choosedcity").value
+var config = {
+  method: 'get',
+  url: 'https://weatherapp.c1-na.altogic.com/currentWeather?cityName='+choosedcity,
+  headers: { }
+};
+
+axios(config)
+.then(function (response) {
+    document.getElementById("citylabel").innerText =  response.data.name +", "+ response.data.sys.country
+    document.getElementById("templabel").innerText = `${Math.round(response.data.main.temp)}°C`
+    document.getElementById("desclabel").innerText = response.data.weather[0].description
+    let now = new Date();
+    document.getElementById("datelabel").innerText = dateBuilder(now);
+    document.getElementById("aralabel").innerText = `${Math.round(response.data.main.temp_min)}°C / ${Math.round(response.data.main.temp_max)}°C`
+
+    function dateBuilder (d) {
+      let months = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+      let days = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
+  
+      let day = days[d.getDay()];
+      let date = d.getDate();
+      let month = months[d.getMonth()];
+      let year = d.getFullYear();
+  
+      return `${date} ${month} ${day} ${year}`;
+    }
+})
+.catch(function (error) {
+  console.log(error);
+});
+}
+
+
+        </script>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</body>
+</html>
